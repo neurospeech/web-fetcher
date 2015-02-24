@@ -38,8 +38,9 @@ namespace WebFetcher.Controllers
                     var s = await r.Content.ReadAsByteArrayAsync();
                     //Response.CacheControl = r.Headers.CacheControl.
 
+                    SetCache(Response.Cache, r.Headers.CacheControl);
+                    
 
-                    Response.CacheControl = "public,max-age=3240000";
                     var val = r.Content.Headers.Expires;
                     if (val != null)
                     {
@@ -66,6 +67,20 @@ namespace WebFetcher.Controllers
                     return new HttpStatusCodeResult(r.StatusCode, str);
                 }
             }
+        }
+
+        private void SetCache(HttpCachePolicyBase cache, System.Net.Http.Headers.CacheControlHeaderValue cacheIn)
+        {
+            if (cacheIn.Public) {
+                cache.SetCacheability(HttpCacheability.Public);
+            }
+            if (cacheIn.Private) {
+                cache.SetCacheability(HttpCacheability.Private);
+            }
+            if (cacheIn.MaxAge != null) {
+                cache.SetMaxAge(cacheIn.MaxAge.Value);
+            }
+            
         }
     }
 }
