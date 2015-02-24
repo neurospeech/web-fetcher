@@ -21,7 +21,7 @@ namespace WebFetcher.Controllers
 
                 bool isSecure = Request.IsSecureConnection;
 
-                UriBuilder builder = new UriBuilder("http://" + Request.RawUrl);
+                UriBuilder builder = new UriBuilder("http:/" + Request.RawUrl);
 
                 if(!RouteConfig.AllowedHosts.IsMatch(builder.Host)){
                     throw new InvalidOperationException(builder.Host + " not allowed.");
