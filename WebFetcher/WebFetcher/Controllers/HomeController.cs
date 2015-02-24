@@ -46,6 +46,13 @@ namespace WebFetcher.Controllers
 
                     var str = await r.Content.ReadAsStringAsync();
 
+                    // this response must not be cached anywhere ...
+                    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+
+                    // this must expire immediately ...
+                    Response.ExpiresAbsolute = DateTime.UtcNow.AddDays(-2);
+
+
                     return new HttpStatusCodeResult(r.StatusCode, str);
                 }
             }
