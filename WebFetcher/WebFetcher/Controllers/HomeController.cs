@@ -37,7 +37,7 @@ namespace WebFetcher.Controllers
 
                     var s = await r.Content.ReadAsByteArrayAsync();
 
-                    Response.CacheControl = r.Headers.CacheControl.ToString();
+                    //Response.CacheControl = r.Headers.CacheControl.
 
                     return this.File(s, r.Content.Headers.ContentType.ToString());
 
