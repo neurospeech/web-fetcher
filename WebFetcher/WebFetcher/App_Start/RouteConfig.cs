@@ -19,7 +19,7 @@ namespace WebFetcher
 
             var h = System.Web.Configuration.WebConfigurationManager.AppSettings["AllowedHosts"];
 
-            var matches = string.Join("|", h.Split(',', ';', ' ').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Replace("*", ".*?")));
+            var matches = string.Join("|", h.Split(',', ';', ' ').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().Replace("*", ".*?")));
 
             AllowedHosts = new Regex(matches , RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
