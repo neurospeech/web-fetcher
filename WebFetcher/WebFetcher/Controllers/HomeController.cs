@@ -34,7 +34,10 @@ namespace WebFetcher.Controllers
                 var r = await client.GetAsync(builder.ToString());
                 if (r.StatusCode == System.Net.HttpStatusCode.OK) {
 
+
                     var s = await r.Content.ReadAsByteArrayAsync();
+
+                    Response.CacheControl = r.Headers.CacheControl.ToString();
 
                     return this.File(s, r.Content.Headers.ContentType.ToString());
 
