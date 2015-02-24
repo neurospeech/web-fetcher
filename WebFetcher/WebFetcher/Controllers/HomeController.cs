@@ -36,8 +36,17 @@ namespace WebFetcher.Controllers
 
 
                     var s = await r.Content.ReadAsByteArrayAsync();
-
                     //Response.CacheControl = r.Headers.CacheControl.
+
+
+                    var val = r.Content.Headers.Expires;
+                    if (val != null)
+                    {
+                        Response.ExpiresAbsolute = val.Value.UtcDateTime;
+                    }
+                    else {
+                        Response.CacheControl = "public,max-age=3240000";
+                    }
 
                     return this.File(s, r.Content.Headers.ContentType.ToString());
 
