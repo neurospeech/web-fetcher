@@ -27,9 +27,9 @@ namespace WebFetcher.Controllers
                     throw new InvalidOperationException(builder.Host + " not allowed.");
                 }
 
-                if(isSecure){
-                    builder.Scheme = "https";
-                }
+                //if(isSecure){
+                //    builder.Scheme = "https";
+                //}
 
                 var r = await client.GetAsync(builder.ToString());
                 if (r.StatusCode == System.Net.HttpStatusCode.OK) {
