@@ -17,7 +17,7 @@ namespace WebFetcher
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            var h = System.Web.Configuration.WebConfigurationManager.AppSettings["AllowedHosts"];
+            var h = System.Web.Configuration.WebConfigurationManager.AppSettings["AllowHosts"];
 
             var matches = string.Join("|", h.Split(',', ';', ' ').Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().Replace("*", ".*?")));
 
