@@ -39,13 +39,11 @@ namespace WebFetcher.Controllers
                     //Response.CacheControl = r.Headers.CacheControl.
 
 
+                    Response.CacheControl = "public,max-age=3240000";
                     var val = r.Content.Headers.Expires;
                     if (val != null)
                     {
                         Response.ExpiresAbsolute = val.Value.UtcDateTime;
-                    }
-                    else {
-                        Response.CacheControl = "public,max-age=3240000";
                     }
 
                     return this.File(s, r.Content.Headers.ContentType.ToString());
