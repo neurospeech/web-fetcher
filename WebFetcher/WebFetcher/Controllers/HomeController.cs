@@ -11,6 +11,7 @@ namespace WebFetcher.Controllers
 {
     public class HomeController : Controller
     {
+
         // GET: Home
         public async Task<ActionResult> Index(string all)
         {
@@ -21,6 +22,11 @@ namespace WebFetcher.Controllers
                 bool isSecure = Request.IsSecureConnection;
 
                 UriBuilder builder = new UriBuilder("http://" + Request.RawUrl);
+
+                if(!RouteConfig.AllowedHosts.IsMatch(builder.Host)){
+                    throw new InvalidOperationException(builder.Host + " not allowed.");
+                }
+
                 if(isSecure){
                     builder.Scheme = "https";
                 }
