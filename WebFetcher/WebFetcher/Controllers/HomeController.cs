@@ -16,6 +16,13 @@ namespace WebFetcher.Controllers
         public async Task<ActionResult> Index(string all)
         {
 
+            Response.AppendHeader("Access-Control-Allow-Origin", "*");
+            if (string.Equals(Request.HttpMethod, "OPTIONS", StringComparison.OrdinalIgnoreCase)) {
+                Response.AppendHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                Response.AppendHeader("Access-Control-Allow-Headers", "Content-Type, Origin");
+                Response.AppendHeader("Access-Control-Max-Age", "1728000");
+            }
+
             using (HttpClient client = new HttpClient())
             {
 
