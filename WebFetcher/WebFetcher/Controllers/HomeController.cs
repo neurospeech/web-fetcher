@@ -58,6 +58,19 @@ namespace WebFetcher.Controllers
 
                 }
 
+                if (r.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    SetCache(Response.Cache, r.Headers.CacheControl);
+                    var val = r.Content.Headers.Expires;
+                    if (val != null)
+                    {
+                        Response.ExpiresAbsolute = val.Value.UtcDateTime;
+                    }
+
+                    return this.HttpNotFound(r.ReasonPhrase);
+
+                }
+
                 using (StringWriter sw = new StringWriter()) {
                     sw.WriteLine("Error retreiving " + builder.ToString());
                     sw.WriteLine("Http Status Code: " + r.StatusCode.ToString());
