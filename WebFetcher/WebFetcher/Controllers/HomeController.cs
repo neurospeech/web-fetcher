@@ -39,53 +39,8 @@ namespace WebFetcher.Controllers
                 //}
 
                 var r = await client.GetAsync(builder.ToString());
-                if (r.StatusCode == System.Net.HttpStatusCode.OK) {
 
-
-                    var s = await r.Content.ReadAsByteArrayAsync();
-                    //Response.CacheControl = r.Headers.CacheControl.
-
-                    SetCache(Response.Cache, r.Headers.CacheControl);
-                    
-
-                    var val = r.Content.Headers.Expires;
-                    if (val != null)
-                    {
-                        Response.ExpiresAbsolute = val.Value.UtcDateTime;
-                    }
-
-                    return this.File(s, r.Content.Headers.ContentType.ToString());
-
-                }
-
-                if (r.StatusCode == System.Net.HttpStatusCode.NotFound)
-                {
-                    SetCache(Response.Cache, r.Headers.CacheControl);
-                    var val = r.Content.Headers.Expires;
-                    if (val != null)
-                    {
-                        Response.ExpiresAbsolute = val.Value.UtcDateTime;
-                    }
-
-                    return this.HttpNotFound(r.ReasonPhrase);
-
-                }
-
-                using (StringWriter sw = new StringWriter()) {
-                    sw.WriteLine("Error retreiving " + builder.ToString());
-                    sw.WriteLine("Http Status Code: " + r.StatusCode.ToString());
-
-                    var str = await r.Content.ReadAsStringAsync();
-
-                    // this response must not be cached anywhere ...
-                    Response.Cache.SetCacheability(HttpCacheability.NoCache);
-
-                    // this must expire immediately ...
-                    Response.ExpiresAbsolute = DateTime.UtcNow.AddDays(-2);
-
-
-                    return new HttpStatusCodeResult(r.StatusCode, str);
-                }
+                return await HttpResponseActionResult.New(r);
             }
         }
 
@@ -101,6 +56,71 @@ namespace WebFetcher.Controllers
                 cache.SetMaxAge(cacheIn.MaxAge.Value);
             }
             
+        }
+    }
+
+    public class HttpResponseActionResult : ActionResult
+    {
+
+        public static async Task<HttpResponseActionResult> New(HttpResponseMessage msg)
+        {
+            var s = await msg.Content.ReadAsByteArrayAsync();
+            return new HttpResponseActionResult { 
+                Content=s, 
+                ResponseMessage = msg 
+            };
+        } 
+
+        public HttpResponseMessage ResponseMessage { get; set; }
+
+        public byte[] Content { get; set; }
+
+        public override void ExecuteResult(ControllerContext context)
+        {
+            var Response = context.HttpContext.Response;
+
+            Response.StatusCode = (int)ResponseMessage.StatusCode;
+            Response.StatusDescription = ResponseMessage.ReasonPhrase;
+
+            SetCache(Response.Cache, ResponseMessage.Headers.CacheControl);
+
+            var content = ResponseMessage.Content;
+            var val = content.Headers.Expires;
+            if (val != null)
+            {
+                Response.ExpiresAbsolute = val.Value.UtcDateTime;
+            }
+
+            Response.ContentType = content.Headers.ContentType.ToString();
+
+            if (ResponseMessage.Headers.Location != null)
+            {
+                Response.RedirectLocation = ResponseMessage.Headers.Location.ToString();
+            }
+            else
+            {
+                if (Content != null)
+                {
+                    Response.OutputStream.Write(Content, 0, Content.Length);
+                }
+            }
+        }
+
+        private void SetCache(HttpCachePolicyBase cache, System.Net.Http.Headers.CacheControlHeaderValue cacheIn)
+        {
+            if (cacheIn.Public)
+            {
+                cache.SetCacheability(HttpCacheability.Public);
+            }
+            if (cacheIn.Private)
+            {
+                cache.SetCacheability(HttpCacheability.Private);
+            }
+            if (cacheIn.MaxAge != null)
+            {
+                cache.SetMaxAge(cacheIn.MaxAge.Value);
+            }
+
         }
     }
 }
