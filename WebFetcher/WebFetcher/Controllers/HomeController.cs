@@ -81,7 +81,7 @@ namespace WebFetcher.Controllers
 
             Response.StatusCode = (int)ResponseMessage.StatusCode;
             Response.StatusDescription = ResponseMessage.ReasonPhrase;
-
+            Response.TrySkipIisCustomErrors = true;
             SetCache(Response.Cache, ResponseMessage.Headers.CacheControl);
 
             var content = ResponseMessage.Content;
