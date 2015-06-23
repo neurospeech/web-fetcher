@@ -23,6 +23,13 @@ namespace WebFetcher
         {
             var context = filterContext.HttpContext;
 
+            //if(context.Request.RawUrl)
+            string mime = MimeMapping.GetMimeMapping(context.Request.RawUrl) ?? "";
+            if (!mime.Equals("application/json", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!mime.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
+                    return;
+            }
             var ae = context.Request.Headers["Accept-Encoding"];
             if (ae != null)
             {
