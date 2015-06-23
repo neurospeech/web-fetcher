@@ -13,6 +13,15 @@ namespace WebFetcher
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+            FilterConfig.RegisterFilters(GlobalFilters.Filters);
         }
+
+        #region void  MvcApplication_Error(object sender, EventArgs e)
+        void MvcApplication_Error(object sender, EventArgs e)
+        {
+            Response.Filter = null;
+        }
+        #endregion
+
     }
 }
