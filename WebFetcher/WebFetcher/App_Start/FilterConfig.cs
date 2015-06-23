@@ -25,11 +25,10 @@ namespace WebFetcher
 
             //if(context.Request.RawUrl)
             string mime = MimeMapping.GetMimeMapping(context.Request.RawUrl) ?? "";
-            if (!mime.Equals("application/json", StringComparison.OrdinalIgnoreCase))
-            {
-                if (!mime.StartsWith("text/", StringComparison.OrdinalIgnoreCase))
-                    return;
-            }
+
+            if (!isText(mime))
+                return;
+
             var ae = context.Request.Headers["Accept-Encoding"];
             if (ae != null)
             {
@@ -50,6 +49,20 @@ namespace WebFetcher
             }
 
             base.OnActionExecuting(filterContext);
+        }
+
+        private bool isText(string mime)
+        {
+            mime = mime.ToLower();
+            switch (mime)
+            {
+                case "application/json":
+                case "application/javascript":
+                    return true;
+                default:
+                    break;
+            }
+            return mime.StartsWith("text/");
         }
 
     }
