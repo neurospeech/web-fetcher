@@ -126,7 +126,12 @@ namespace WebFetcher.Controllers
             }
             if (cacheIn.MaxAge != null)
             {
-                cache.SetMaxAge(cacheIn.MaxAge.Value);
+                var maxAge = cacheIn.MaxAge.Value;
+                if (maxAge.TotalDays < 1) {
+                    maxAge = TimeSpan.FromDays(30);
+                }
+                cache.SetCacheability(HttpCacheability.Public);
+                cache.SetMaxAge(maxAge);
             }
 
         }
