@@ -99,7 +99,10 @@ namespace WebFetcher.Controllers
                 Response.ExpiresAbsolute = val.Value.UtcDateTime;
             }
 
-            Response.ContentType = content.Headers.ContentType.ToString();
+            if (content.Headers.ContentType != null)
+            {
+                Response.ContentType = content.Headers.ContentType.ToString();
+            }
 
             if (ResponseMessage.Headers.Location != null)
             {
