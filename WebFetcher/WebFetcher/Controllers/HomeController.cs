@@ -135,6 +135,7 @@ namespace WebFetcher.Controllers
                 }
                 cache.SetCacheability(HttpCacheability.Public);
                 cache.SetMaxAge(maxAge);
+                cache.SetSlidingExpiration(true);
             }
 
         }
