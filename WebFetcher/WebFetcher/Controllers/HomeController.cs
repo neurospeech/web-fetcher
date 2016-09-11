@@ -44,19 +44,19 @@ namespace WebFetcher.Controllers
             }
         }
 
-        private void SetCache(HttpCachePolicyBase cache, System.Net.Http.Headers.CacheControlHeaderValue cacheIn)
-        {
-            if (cacheIn.Public) {
-                cache.SetCacheability(HttpCacheability.Public);
-            }
-            if (cacheIn.Private) {
-                cache.SetCacheability(HttpCacheability.Private);
-            }
-            if (cacheIn.MaxAge != null) {
-                cache.SetMaxAge(cacheIn.MaxAge.Value);
-            }
+        //private void SetCache(HttpCachePolicyBase cache, System.Net.Http.Headers.CacheControlHeaderValue cacheIn)
+        //{
+        //    if (cacheIn.Public) {
+        //        cache.SetCacheability(HttpCacheability.Public);
+        //    }
+        //    if (cacheIn.Private) {
+        //        cache.SetCacheability(HttpCacheability.Private);
+        //    }
+        //    if (cacheIn.MaxAge != null) {
+        //        cache.SetMaxAge(cacheIn.MaxAge.Value);
+        //    }
             
-        }
+        //}
     }
 
     public class HttpResponseActionResult : ActionResult
@@ -83,8 +83,15 @@ namespace WebFetcher.Controllers
             Response.StatusDescription = ResponseMessage.ReasonPhrase;
             Response.TrySkipIisCustomErrors = true;
 
+            var content = ResponseMessage.Content;
+
             if (Response.StatusCode == 200)
             {
+                var val = content.Headers.Expires;
+                if (val != null)
+                {
+                    Response.ExpiresAbsolute = val.Value.UtcDateTime;
+                }
                 SetCache(Response.Cache, ResponseMessage.Headers.CacheControl);
             }
             else
@@ -92,13 +99,7 @@ namespace WebFetcher.Controllers
                 Response.Cache.SetCacheability(HttpCacheability.NoCache);
             }
 
-            var content = ResponseMessage.Content;
-            var val = content.Headers.Expires;
-            if (val != null)
-            {
-                Response.ExpiresAbsolute = val.Value.UtcDateTime;
-            }
-
+            
             if (content.Headers.ContentType != null)
             {
                 Response.ContentType = content.Headers.ContentType.ToString();
